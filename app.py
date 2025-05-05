@@ -10,8 +10,8 @@ base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # or local path if downloa
 adapter_path = "./tinyllama-howto-final"  # or HF hub path like "yourname/tinyllama-howto-final"
 
 # Load tokenizer and base model
-base_model = LlamaForCausalLM.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-tokenizer = LlamaTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+base_model = AutoModelForCausalLM.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0", trust_remote_code=True,device_map="auto")
+tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0", trust_remote_code=True)
 model = PeftModel.from_pretrained(base_model, "./tinyllama-howto-final")
 
 # Ready to use
