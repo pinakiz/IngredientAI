@@ -5,18 +5,35 @@ from peft import PeftModel
 import torch
 
 # Model paths
-base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Use Hugging Face model ID
-adapter_path = "./tinyllama-howto-final"              # LoRA adapter directory (must contain adapter_model.safetensors or similar)
+base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Hugging Face model ID
+adapter_path = "./tinyllama-howto-final"              # LoRA adapter directory
 
-# Load tokenizer and model with LoRA adapter
-tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True)
-base_model = AutoModelForCausalLM.from_pretrained(
-    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    torch_dtype=torch.float16,
-    device_map="auto"
-)
-model = PeftModel.from_pretrained(base_model, adapter_path)
+# Load tokenizer from base model (not adapter path)
+tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
 
+# Load base model with explicit model type handling
+try:
+    base_model = AutoModelForCausalLM.from_pretrained(
+        base_model_id,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=True
+    )
+except ValueError as e:
+    print(f"Error loading model: {e}")
+    # Fallback to explicit LLaMA model class if needed
+    from transformers import LlamaForCausalLM
+    base_model = LlamaForCausalLM.from_pretrained(
+        base_model_id,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=True
+    )
+
+# Load LoRA adapter
+model = PeftModel.from_pretrained(base_model, adapter_path, trust_remote_code=True)
+
+# Set model to evaluation mode
 model.eval()
 
 # FastAPI setup
