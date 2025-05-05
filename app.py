@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import LlamaForCausalLM, LlamaTokenizer
 from peft import PeftModel
 import torch
 
@@ -9,15 +10,9 @@ base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # or local path if downloa
 adapter_path = "./tinyllama-howto-final"  # or HF hub path like "yourname/tinyllama-howto-final"
 
 # Load tokenizer and base model
-tokenizer = AutoTokenizer.from_pretrained(base_model_id)
-base_model = AutoModelForCausalLM.from_pretrained(
-    base_model_id,
-    torch_dtype=torch.float16,  # or .bfloat16 if preferred
-    device_map="auto"           # automatically chooses GPU if available
-)
-
-# Load adapter weights into base model
-model = PeftModel.from_pretrained(base_model, adapter_path)
+base_model = LlamaForCausalLM.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+tokenizer = LlamaTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+model = PeftModel.from_pretrained(base_model, "./tinyllama-howto-final")
 
 # Ready to use
 model.eval()
