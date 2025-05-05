@@ -10,10 +10,11 @@ adapter_dir = "./tinyllama-howto-final"               # Your local LoRA adapter 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load base model and tokenizer (no need to download manually)
-tokenizer = AutoTokenizer.from_pretrained(base_model_id)
+tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
 base_model = AutoModelForCausalLM.from_pretrained(
     base_model_id,
-    torch_dtype=torch.float16 if device == "cuda" else torch.float32
+    torch_dtype=torch.float16 if device == "cuda" else torch.float32, 
+    trust_remote_code=True
 )
 model = PeftModel.from_pretrained(base_model, adapter_dir).to(device)
 model.eval()
