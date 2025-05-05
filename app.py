@@ -4,19 +4,22 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import torch
 
-# Model setup
-base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Base model from Hugging Face
-adapter_dir = "./tinyllama-howto-final"               # Your local LoRA adapter folder
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Paths
+base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # or local path if downloaded
+adapter_path = "./tinyllama-howto-final"  # or HF hub path like "yourname/tinyllama-howto-final"
 
-# Load base model and tokenizer (no need to download manually)
-tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
+# Load tokenizer and base model
+tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 base_model = AutoModelForCausalLM.from_pretrained(
     base_model_id,
-    torch_dtype=torch.float16 if device == "cuda" else torch.float32, 
-    trust_remote_code=True
+    torch_dtype=torch.float16,  # or .bfloat16 if preferred
+    device_map="auto"           # automatically chooses GPU if available
 )
-model = PeftModel.from_pretrained(base_model, adapter_dir).to(device)
+
+# Load adapter weights into base model
+model = PeftModel.from_pretrained(base_model, adapter_path)
+
+# Ready to use
 model.eval()
 
 # FastAPI app
