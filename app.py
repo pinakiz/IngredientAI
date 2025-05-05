@@ -9,8 +9,12 @@ base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Use Hugging Face model I
 adapter_path = "./tinyllama-howto-final"              # LoRA adapter directory (must contain adapter_model.safetensors or similar)
 
 # Load tokenizer and model with LoRA adapter
-tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
-base_model = AutoModelForCausalLM.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto")
+tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True)
+base_model = AutoModelForCausalLM.from_pretrained(
+    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
 model = PeftModel.from_pretrained(base_model, adapter_path)
 
 model.eval()
