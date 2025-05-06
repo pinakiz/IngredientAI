@@ -14,4 +14,6 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 
 install:
 pip install -r requirements.txt
+
+
 run the app using : uvicorn app:app --host 0.0.0.0 --port 8000
