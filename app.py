@@ -6,7 +6,7 @@ import torch
 
 # Model paths
 base_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Hugging Face model ID
-adapter_path = "./tinyllama-howto-final"              # LoRA adapter directory
+adapter_path = "pinakiz/ingredient-LLama"              # LoRA adapter directory
 
 # Load tokenizer from base model (not adapter path)
 tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
